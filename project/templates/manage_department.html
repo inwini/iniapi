@@ -1,0 +1,225 @@
+{% extends "layouts/main.html" %} 
+{% block pagestyles %}
+<link href="{{ url_for('static', filename='dist/css/dashboard.css') }}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://use.typekit.net/sus7rlu.css"> 
+{% endblock %} 
+
+{% block content %}
+<div class="page-title">
+    <div class="row pb-3">
+        <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>Manage Oil</h3>
+        </div>
+        <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                <ol class="breadcrumb">
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-md-center">
+    <div class="main-content container-fluid">
+        <section class="section">
+            <div class="card">
+                <div class="card-header">
+                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#inlineForm">
+                        Add Admin
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table class='table table-striped' id="table1">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Oil Type</th>
+                                <th>Station Name</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set id = 0 %} {% for item in department_data %}
+                            <tr id="table_{{ item[0].id }}">
+                                <td>{{ item[0].id }}</td>
+                                <td>{{ item[0].department_name }}</td>
+                                <td>{{ item.build_name }}</td>
+                                <td>{{ item[0].created_at }}</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-6 p-1 pointer edit" data-row="{{ item[0].id }}" data-toggle="modal" data-target="#editForm">
+                                            <img src="{{ url_for('static', filename='assets/images/edit-file-icon.png') }}" class="p-1" style="width:40px" alt="">
+                                        </div>
+                                        <div class="col-md-6 p-1 pointer remove" data-row="{{ item[0].id }}">
+                                            <img src="{{ url_for('static', filename='assets/images/delete-1-icon.png') }}" class="p-1" style="width:40px" alt="">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% set id = id + 1|int %} {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </div>
+</div>
+
+<form class="form" action="javascript:create_department()" method="POST">
+    <div class="modal fade text-left" id="inlineForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel33">Create Admin </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i data-feather="x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>Departmaent Name: </label>
+                    <div class="form-group">
+                        <input type="text" placeholder="Departmaent Name" id="departmaent" class="form-control" required/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-dismiss="modal">
+                <i class="bx bx-x d-block d-sm-none"></i>
+                <span class="d-none d-sm-block">Cancle</span>
+                </button>
+                <button type="submit" class="btn btn-primary ml-1">
+                    <i class="bx bx-check d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Create</span>
+                </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="modal fade text-left" id="editForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel33">Create Admin </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <i data-feather="x"></i>
+        </button>
+            </div>
+            <div class="modal-body">
+                <label>Departmaent Name: </label>
+                <div class="form-group">
+                    <input type="text" placeholder="Departmaent Name" id="departmaent_edit" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-secondary" data-dismiss="modal">
+            <i class="bx bx-x d-block d-sm-none"></i>
+            <span class="d-none d-sm-block">Cancle</span>
+            </button>
+                <button type="button" class="btn btn-primary ml-1" onclick="edit_department()">
+            <i class="bx bx-check d-block d-sm-none"></i>
+            <span class="d-none d-sm-block">Update</span>
+            </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='assets/vendors/simple-datatables/simple-datatables.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/vendors.js') }}"></script>
+<script>
+    var csrf_token = "{{ csrf_token() }}";
+    var department_id = 0;
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        }
+    });
+
+    function create_department() {
+        var departmaent = $("#departmaent").val();
+        console.log(departmaent);
+        $.ajax({
+            type: "POST",
+            url: "manage-department",
+            data: {
+                "departmaent": departmaent,
+            },
+            success: function(response) {
+                console.log(response);
+                window.location.reload();
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+        $('#inlineForm').modal('hide');
+    }
+
+    function edit_department() {
+        var deparment_name = $("#departmaent_edit").val();
+        console.log(department_id,deparment_name)
+        $.ajax({
+            type: "PUT",
+            url: "manage-department",
+            data: {
+                department_id:department_id,
+                department_name:deparment_name
+            },
+            success: function(response) {
+                console.log(response);
+                $('#editForm').modal('hide');
+                window.location.reload();
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+
+    $(document).on('click','.edit', function(){
+        var edit_row = $(this).data("row");
+        // console.log(edit_row);
+        department_id = edit_row;
+        $.ajax({
+            type: "GET",
+            url: "manage-department?department_id="+department_id,
+            data: {
+            },
+            success: function(response) {
+                // console.log(response);
+                $("#departmaent_edit").val(response.deparment_name);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
+    });
+
+    $(document).on('click','.remove', function(){
+        var delete_row = $(this).data("row");
+        console.log(delete_row);
+        $.ajax({
+            type: "DELETE",
+            url: "manage-department",
+            data: {
+                "department_id": delete_row
+            },
+            success: function(response) {
+                console.log(response);
+                // $('#inlineForm').modal('hide');
+                $("#table_"+delete_row).remove();
+                // window.location.reload();
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+        
+    });
+</script>
+
+{% endblock %}

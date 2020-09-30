@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/simple-datatables/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/chartjs/Chart.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/perfect-scrollbar/perfect-scrollbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='assets/images/PTT.png') }}" type="image/x-icon">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .base-obj{
+            box-shadow: 0 9px #999;
+        }
+        .hover-obj{background-color: #3e8e41}
+        .active-obj {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+        .pointer {cursor: pointer;}
+        .input-fix{
+            width:60px;
+        }
+        .input-select{
+            width:100px;
+        }
+    </style>
+</head>
+
+<body class="{{ template }}">
+    <div id="app">
+        <div id="sidebar" class='active'>
+            <div class="sidebar-wrapper active">
+                <div class="sidebar-header">
+                    <!-- <img src="{{ url_for('static', filename='assets/images/logo.svg') }}" alt="" srcset=""> -->
+                    <img src="{{ url_for('static', filename='assets/images/PTTINI.png') }}" alt="" srcset="">
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+
+                        <li class='sidebar-title'>Main</li>
+
+                        {% if current_user.role_id == 1 %}
+                        <li class="sidebar-item {{ add_data }}">
+                            <a href="add-data" class='sidebar-link'>
+                                <i data-feather="file-text" width="20"></i>
+                                <span>Add Data</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="sidebar-item {{ dashborad }} ">
+                            <a href="/dashboard" class='sidebar-link'>
+                                <i data-feather="home" width="20"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ search }} ">
+                            <a href="/search" class='sidebar-link'>
+                                <i data-feather="search" width="20"></i>
+                                <span>Search</span>
+                            </a>
+                        </li>
+                        
+                        <li class='sidebar-title'>Manage</li>
+
+                        {% if current_user.role_id == 2 %}
+                        <li class="sidebar-item {{ manage_user }} ">
+                            <a href="manage-user" class='sidebar-link'>
+                                <i data-feather="file-text" width="20"></i>
+                                <span>Manage User</span>
+                            </a>
+                        </li>
+                        {% endif %} 
+                        {% if current_user.role_id == 1 %}
+                        <li class="sidebar-item {{ manage_build }}">
+                            <a href="manage-build" class='sidebar-link'>
+                                <i data-feather="file-text" width="20"></i>
+                                <span>Manage Station</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ manage_department }}">
+                            <a href="manage-department" class='sidebar-link'>
+                                <i data-feather="file-text" width="20"></i>
+                                <span>Manage Oil</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                    </ul>
+                </div>
+                <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+            </div>
+        </div>
+        <div id="main">
+            <nav class="navbar navbar-header navbar-expand navbar-light">
+                <a class="sidebar-toggler" href="#"><span class="navbar-toggler-icon"></span></a>
+                <button class="btn navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav d-flex align-items-center navbar-light ml-auto">
+                        <li class="dropdown">
+                            <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
+                                <div class="avatar mr-1">
+                                    <img src="static/{{ current_user.image }}" alt="" srcset="">
+                                </div>
+                                <div class="d-none d-md-block d-lg-inline-block">สวัสดี {{ current_user.username }}!</div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="profile"><i data-feather="user"></i> Profile</a>
+                                <a class="dropdown-item" href="update-password"><i data-feather="user"></i> Update Password</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ url_for('main_bp.logout') }}"><i data-feather="log-out"></i> Logout</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="main-content container-fluid">
+
+                {% block content %}
+                
+                {% endblock %}
+                
+            </div>
+
+            <footer>
+                <div class="footer clearfix mb-0 text-muted">
+                    <div class="float-left">
+
+                    </div>
+                    <div class="float-right">
+
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='assets/js/feather-icons/feather.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/app.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='assets/vendors/simple-datatables/simple-datatables.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/vendors.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+</body>
+
+</html>

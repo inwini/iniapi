@@ -1,0 +1,232 @@
+{% extends "layouts/main.html" %} 
+
+{% block pagestyles %}
+<link href="{{ url_for('static', filename='dist/css/dashboard.css') }}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://use.typekit.net/sus7rlu.css"> 
+{% endblock %} 
+
+{% block content %}
+<div class="page-title">
+    <div class="row pb-3">
+        <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>กรอกข้อมูล</h3>
+
+        </div>
+        <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                <ol class="breadcrumb">
+
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<form class="form" action="javascript:send_form()" method="POST">
+    <div class="row ">
+
+        <div class="col-md-4 px-4 card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="Build Name" style="font-size:20px">สถานีน้ำมัน</label>
+                            <input type="text" class="form-control form-control-build-name" value="{{ build_data.build_name }}" id="build" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="License Plate" style="font-size:20px">ทะเบียนรถ</label>
+                            <input type="text" class="form-control form-control-license-plate" id="license-plate" required/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 px-4 card">
+            <div class="card-header">
+                <div class="float-right">
+                    <input type="button" class="btn btn-primary float-right" style="border-radius: 5%;" onclick="add_card()" value="เพิ่มถัง"></input>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class='table ' id="table1">
+                            <thead>
+                                <tr>
+                                    <th>ชนิดน้ำมัน</th>
+                                    <th>ค่า API</th>
+                                    <th>ค่า TEMP</th>
+                                    <th>API ต้นทาง</th>
+                                    <th>API @60F</th>
+                                    <th>คลาดเคลื่อน</th>
+                                    <th>action</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody id="table_body">
+                                <tr id="table_0" class="table-send-form" data-row="0">
+                                    <td>
+                                        <div class="form-group">
+                                            <select class="choices form-select form-control-department input-select">
+                                                {% for item in department_data %}
+                                                    <option value="{{ item[0].id }}">{{ item[0].department_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-column-a input-fix" step="any" required/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-column-c input-fix" required/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-column-b input-fix" required/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-column-sum input-fix" id="table_sum0" disabled>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-column-error input-fix" id="table_error0" disabled>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary float-right p-0" style="border-radius: 50%;">
+                                            <img src="{{ url_for('static', filename='assets/images/criss-cross.png') }}" class="float-right remove" data-row="0" style="width: 35px;" alt="">
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+    
+                    </div>
+                </div>
+                <div class="px-10 float-right">
+                    <button class="btn btn-primary ">
+                        submit
+                    </button>
+                </div>
+                <div class="float-right p-2"></div>
+                <div class="px-10 float-right">
+                    <input type="button" class="btn btn-danger" value="reset" onclick="reset()">
+                        
+                    </input>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script src="{{ url_for('static', filename='assets/vendors/simple-datatables/simple-datatables.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/vendors.js') }}"></script>
+<script>
+    var count_card = 1;
+    $(document).on('click', '.remove', function() {
+        var delete_row = $(this).data("row");
+        $("#table_" + delete_row).remove();
+    });
+
+    function add_card() {
+        var html_code = `<tr id="table_`+count_card+`" class="table-send-form"  data-row="`+count_card+`">
+                                <td>
+                                    <div class="form-group">
+                                        <select class="choices form-select form-control-department input-select">
+                                            {% for item in department_data %}
+                                                <option value="{{ item[0].id }}">{{ item[0].department_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-column-a input-fix" required/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-column-c input-fix" required/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-column-b input-fix" required/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-column-sum input-fix" id="table_sum`+count_card+`" disabled>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-column-error input-fix" id="table_error`+count_card+`" disabled>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary float-right p-0" style="border-radius: 50%;">
+                                        <img src="{{ url_for('static', filename='assets/images/criss-cross.png') }}" class="float-right remove" data-row="`+count_card+`" style="width: 35px;" alt="">
+                                    </button>
+                                </td>
+                            </tr>`
+        $("#table_body").append(html_code);
+        count_card += 1;
+    }
+
+    var csrf_token = "{{ csrf_token() }}";
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        }
+    });
+    function send_form() {
+        
+        var license_plate = [];
+        var table_send_form = [];
+        var department = [];
+        var column_a = [];
+        var column_b = [];
+        var column_c = [];
+        var check_sendform = 0;
+
+
+        $('.table-send-form').each(function() {
+            license_plate.push($('#license-plate').val());
+            table_send_form.push($(this).data("row"));
+        });
+        $('.form-control-department').each(function() {
+            department.push($(this).val());
+        });
+        $('.form-control-column-a').each(function() {
+            column_a.push($(this).val());
+        });
+        $('.form-control-column-b').each(function() {
+            column_b.push($(this).val());
+        });
+        $('.form-control-column-c').each(function() {
+            column_c.push($(this).val());
+        });
+        console.log( license_plate, table_send_form, department, column_a, column_b, column_c);
+        $.ajax({
+            type: "POST",
+            url: "/add-data",
+            data: {
+                "table_send_form": table_send_form,
+                "license_plate": license_plate,
+                "department": department,
+                "column_a": column_a,
+                "column_b": column_b,
+                "column_c": column_c
+            },
+            success: function(response) {
+                data = JSON.parse(response)
+                if (data.status == true){
+                    data.data.forEach(element => {
+                    console.log(element);
+                        
+                    $("#table_sum"+element.table).val(element.sum);
+                    $("#table_error"+element.table).val(element.error);
+                    });
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+    function reset(){
+        window.location.reload();
+    }
+</script>
+{% endblock %}
