@@ -51,8 +51,9 @@ def equation_sum(a,b,c):
     apif = (141.5 * 999.012 * (expo))/(rho) - 131.5
 
     aa = float(apif)
+    aaa = format(aa, '.2f')
 
-    return aa
+    return aaa
 
 def equation_error(a,b,c):
 
@@ -78,8 +79,9 @@ def equation_error(a,b,c):
     apif = (141.5 * 999.012 * (expo))/(rho) - 131.5
 
     aa = float(abs(apif-apio))
+    aaa = format(aa, '.3f')
 
-    return  aa
+    return  aaa
 
 @main_bp.route('/export-search',  methods = [ 'GET'])
 def excel():
@@ -207,19 +209,30 @@ def excel():
             sheet.write(set_col, 1, (count), text)
             try:
                 sheet.write(set_col, 2, (item.build_name), text)
+                sheet.write(set_col, 3, (item.license_plate), text)
             except:
                 sheet.write(set_col, 2, (""), text)
-                sheet.write(set_col, 3, (item.license_plate), text)
+                sheet.write(set_col, 3, (""), text)
             try:
                 sheet.write(set_col, 4, (item.department_name), text)
             except:
                 sheet.write(set_col, 4, (""), text)
+
+            try:
                 sheet.write(set_col, 5, (item.variable_a), text)
                 sheet.write(set_col, 6, (item.variable_b), text)
                 sheet.write(set_col, 7, (item.variable_c), text)
                 sheet.write(set_col, 8, (item.sum), text)
                 sheet.write(set_col, 9, (item.error), text)
                 sheet.write(set_col, 10, (str(item.created_at).split(".")[0]), text)
+            except:
+                sheet.write(set_col, 5, (""), text)
+                sheet.write(set_col, 6, (""), text)
+                sheet.write(set_col, 7, (""), text)
+                sheet.write(set_col, 8, (""), text)
+                sheet.write(set_col, 9, (""), text)
+                sheet.write(set_col, 10, (""), text)
+
             count+=1
         
         workbook.close()
