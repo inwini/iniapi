@@ -30,6 +30,7 @@
                 <div class="card-body">
                     <form class="form" action="/search" method="GET">
                         <div class="row">
+
                             <div class="col-md-12 col-12">
                                 <div class="form-group">
                                     <label for="first-name-column">Station</label>
@@ -40,6 +41,7 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="col-md-12 col-12">
                                 <div class="form-group">
                                     <label for="first-name-column">Oil</label>
@@ -48,6 +50,7 @@
                                     </select>
                                 </div>
                             </div>
+                            
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
                                     <label for="city-column">Date Start</label>
@@ -114,8 +117,8 @@
                                     <td>{{ item.variable_a }}</td>
                                     <td>{{ item.variable_b }}</td>
                                     <td>{{ item.variable_c }}</td>
-                                    <td>{{ item.sum }}</td>
-                                    <td>{{ item.error }}</td>
+                                    <td>{{ '%0.2f'| format(item.sum|float) }}</td>
+                                    <td>{{ '%0.3f'| format(item.error|float) }}</td>
                                     <td>{{ item.created_at }}</td>
                                 </tr>
                                 {% endfor %}

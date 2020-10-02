@@ -102,7 +102,7 @@
                     </div>
                 </div>
                 <div class="px-10 float-right">
-                    <button class="btn btn-primary ">
+                    <button class="btn btn-primary" onclick="alert('คำนวนเสร็จแล้ว!')">
                         submit
                     </button>
                 </div>
@@ -117,9 +117,12 @@
     </div>
 </form>
 
+
 <script src="{{ url_for('static', filename='assets/vendors/simple-datatables/simple-datatables.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/vendors.js') }}"></script>
+
 <script>
+
     var count_card = 1;
     $(document).on('click', '.remove', function() {
         var delete_row = $(this).data("row");

@@ -55,22 +55,25 @@
                             </a>
                         </li>
                         {% endif %}
+
+                        {% if current_user.role_id == 2 %}
                         <li class="sidebar-item {{ dashborad }} ">
                             <a href="/dashboard" class='sidebar-link'>
                                 <i data-feather="home" width="20"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
+                        {% endif %}
+
                         <li class="sidebar-item {{ search }} ">
                             <a href="/search" class='sidebar-link'>
                                 <i data-feather="search" width="20"></i>
                                 <span>Search</span>
                             </a>
                         </li>
-                        
-                        <li class='sidebar-title'>Manage</li>
 
                         {% if current_user.role_id == 2 %}
+                        <li class='sidebar-title'>Manage</li>
                         <li class="sidebar-item {{ manage_user }} ">
                             <a href="manage-user" class='sidebar-link'>
                                 <i data-feather="file-text" width="20"></i>
@@ -78,7 +81,8 @@
                             </a>
                         </li>
                         {% endif %} 
-                        {% if current_user.role_id == 1 %}
+
+                        {% if current_user.role_id == 3 %}
                         <li class="sidebar-item {{ manage_build }}">
                             <a href="manage-build" class='sidebar-link'>
                                 <i data-feather="file-text" width="20"></i>
@@ -111,7 +115,7 @@
                                 <div class="avatar mr-1">
                                     <img src="static/{{ current_user.image }}" alt="" srcset="">
                                 </div>
-                                <div class="d-none d-md-block d-lg-inline-block">สวัสดี {{ current_user.username }}!</div>
+                                <div class="d-none d-md-block d-lg-inline-block">สวัสดี {{ current_user.username }}</div>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item" href="profile"><i data-feather="user"></i> Profile</a>
