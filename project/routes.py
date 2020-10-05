@@ -340,70 +340,6 @@ def add_data():
     elif request.method=="PUT":
         pass
 
-@main_bp.route('/dashboard', methods=['GET'])
-@login_required
-def dashboard():
-    if request.method=="GET":
-        user_data = User.query.filter_by(id=current_user.id).first()
-        build_data = Build.query.filter_by(user_id=user_data.id).first()
-        if request.args.get("date_start") != None and request.args.get("time_start") != None and request.args.get("date_end") != None and request.args.get("time_end") != None and request.args.get("department") != None and request.args.get("department") != "0":
-            print(request.args.get("department"))
-            if current_user.role_id == 2:
-                build_data_select = Build.query.all()
-                department_data = Department.query.filter_by(build_id=request.args.get("build")).all()
-                build_log_data = Build_Log.query.filter_by(build_id=request.args.get("build")).filter(Build_Log.created_at >= request.args.get("date_start")+" "+request.args.get("time_start")).filter(Build_Log.created_at <= request.args.get("date_end")+" "+request.args.get("time_end"))\
-                    .filter_by(department_id=request.args.get("department")).all()
-            else:
-                build_data_select = Build.query.filter_by(id=build_data.id).all()
-                department_data = Department.query.filter_by(build_id=request.args.get("build")).all()
-                build_log_data = Build_Log.query.filter_by(build_id=build_data.id).filter(Build_Log.created_at >= request.args.get("date_start")+" "+request.args.get("time_start")).filter(Build_Log.created_at <= request.args.get("date_end")+" "+request.args.get("time_end"))\
-                    .filter_by(department_id=request.args.get("department")).all()    
-            for x in build_log_data:
-                for j in build_data_select:
-                    if j.id == x.build_id:
-                        x.build_name = j.build_name
-                for j in department_data:
-                    if j.id == x.department_id:
-                        x.department_name = j.department_name
-                x.created_at = str(x.created_at).split(".")[0]
-                x.sum = equation_sum(x.variable_a,x.variable_b,x.variable_c)
-                x.error = equation_error(x.variable_a,x.variable_b,x.variable_c)
-        elif request.args.get("date_start") != None and request.args.get("time_start") != None and request.args.get("date_end") != None and request.args.get("time_end") != None:
-            if current_user.role_id == 2:
-                build_data_select = Build.query.all()
-                department_data = Department.query.filter_by(build_id=request.args.get("build")).all()
-                build_log_data = Build_Log.query.filter_by(build_id=request.args.get("build")).filter(Build_Log.created_at >= request.args.get("date_start")+" "+request.args.get("time_start")).filter(Build_Log.created_at <= request.args.get("date_end")+" "+request.args.get("time_end")).all()
-            else:
-                build_data_select = Build.query.filter_by(id=build_data.id).all()
-                department_data = Department.query.filter_by(build_id=request.args.get("build")).all()
-                build_log_data = Build_Log.query.filter_by(build_id=build_data.id).filter(Build_Log.created_at >= request.args.get("date_start")+" "+request.args.get("time_start")).filter(Build_Log.created_at <= request.args.get("date_end")+" "+request.args.get("time_end")).all()    
-            for x in build_log_data:
-                for j in build_data_select:
-                    if j.id == x.build_id:
-                        x.build_name = j.build_name
-                for j in department_data:
-                    if j.id == x.department_id:
-                        x.department_name = j.department_name
-                x.created_at = str(x.created_at).split(".")[0]
-                x.sum = equation_sum(x.variable_a,x.variable_b,x.variable_c)
-                x.error = equation_error(x.variable_a,x.variable_b,x.variable_c)
-        else:
-            build_log_data = []
-            department_data = []
-            if current_user.role_id == 2:
-                build_data_select = Build.query.all()
-            else:
-                build_data_select = Build.query.filter_by(id=build_data.id).all()
-                
-        return render_template(
-            'dashboard.html',
-            title='Dashborad',
-            template='dashboard-template',
-            current_user=current_user,
-            build_data=build_data_select,
-            build_log_data=build_log_data,
-            body="You are now logged in!"
-        )
 
 @main_bp.route('/get-department', methods=['GET'])
 @login_required
@@ -671,3 +607,68 @@ def update_password():
 def logout():
     logout_user()
     return redirect(url_for('auth_bp.login'))
+
+@main_bp.route('/dashboard', methods=['GET'])
+@login_required
+def dashboard():
+    if request.method=="GET":
+        user_data = User.query.filter_by(id=current_user.id).first()
+        build_data = Build.query.filter_by(user_id=user_data.id).first()
+        if request.args.get("date_start") != None and request.args.get("time_start") != None and request.args.get("date_end") != None and request.args.get("time_end") != None and request.args.get("department") != None and request.args.get("department") != "0":
+            print(request.args.get("department"))
+            if current_user.role_id == 2:
+                build_data_select = Build.query.all()
+                department_data = Department.query.filter_by(build_id=request.args.get("build")).all()
+                build_log_data = Build_Log.query.filter_by(build_id=request.args.get("build")).filter(Build_Log.created_at >= request.args.get("date_start")+" "+request.args.get("time_start")).filter(Build_Log.created_at <= request.args.get("date_end")+" "+request.args.get("time_end"))\
+                    .filter_by(department_id=request.args.get("department")).all()
+            else:
+                build_data_select = Build.query.filter_by(id=build_data.id).all()
+                department_data = Department.query.filter_by(build_id=request.args.get("build")).all()
+                build_log_data = Build_Log.query.filter_by(build_id=build_data.id).filter(Build_Log.created_at >= request.args.get("date_start")+" "+request.args.get("time_start")).filter(Build_Log.created_at <= request.args.get("date_end")+" "+request.args.get("time_end"))\
+                    .filter_by(department_id=request.args.get("department")).all()    
+            for x in build_log_data:
+                for j in build_data_select:
+                    if j.id == x.build_id:
+                        x.build_name = j.build_name
+                for j in department_data:
+                    if j.id == x.department_id:
+                        x.department_name = j.department_name
+                x.created_at = str(x.created_at).split(".")[0]
+                x.sum = equation_sum(x.variable_a,x.variable_b,x.variable_c)
+                x.error = equation_error(x.variable_a,x.variable_b,x.variable_c)
+        elif request.args.get("date_start") != None and request.args.get("time_start") != None and request.args.get("date_end") != None and request.args.get("time_end") != None:
+            if current_user.role_id == 2:
+                build_data_select = Build.query.all()
+                department_data = Department.query.filter_by(build_id=request.args.get("build")).all()
+                build_log_data = Build_Log.query.filter_by(build_id=request.args.get("build")).filter(Build_Log.created_at >= request.args.get("date_start")+" "+request.args.get("time_start")).filter(Build_Log.created_at <= request.args.get("date_end")+" "+request.args.get("time_end")).all()
+            else:
+                build_data_select = Build.query.filter_by(id=build_data.id).all()
+                department_data = Department.query.filter_by(build_id=request.args.get("build")).all()
+                build_log_data = Build_Log.query.filter_by(build_id=build_data.id).filter(Build_Log.created_at >= request.args.get("date_start")+" "+request.args.get("time_start")).filter(Build_Log.created_at <= request.args.get("date_end")+" "+request.args.get("time_end")).all()    
+            for x in build_log_data:
+                for j in build_data_select:
+                    if j.id == x.build_id:
+                        x.build_name = j.build_name
+                for j in department_data:
+                    if j.id == x.department_id:
+                        x.department_name = j.department_name
+                x.created_at = str(x.created_at).split(".")[0]
+                x.sum = equation_sum(x.variable_a,x.variable_b,x.variable_c)
+                x.error = equation_error(x.variable_a,x.variable_b,x.variable_c)
+        else:
+            build_log_data = []
+            department_data = []
+            if current_user.role_id == 2:
+                build_data_select = Build.query.all()
+            else:
+                build_data_select = Build.query.filter_by(id=build_data.id).all()
+                
+        return render_template(
+            'dashboard.html',
+            title='Dashborad',
+            template='dashboard-template',
+            current_user=current_user,
+            build_data=build_data_select,
+            build_log_data=build_log_data,
+            body="You are now logged in!"
+        )
