@@ -31,6 +31,7 @@ def signup():
             db.session.commit()
             login_user(user)
             return redirect(url_for('main_bp.dashboard'))
+            
         flash('A user already exists with that email address.')
     return render_template(
         'signup.html',
@@ -53,7 +54,12 @@ def login():
         if user and user.check_password(password=form.password.data):
             login_user(user)
             next_page = request.args.get('next')
-            return redirect(next_page or url_for('main_bp.dashboard'))
+
+            # Edit First Page #
+            # return redirect(next_page or url_for('main_bp.dashboard'))
+            return redirect(next_page or url_for('main_bp.search'))
+            # Edit First Page #
+
         flash('Invalid username/password combination')
         return redirect(url_for('auth_bp.login'))
     return render_template(
