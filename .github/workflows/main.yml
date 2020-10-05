@@ -1,0 +1,47 @@
+# This is a workflow for syncing and deploy
+
+name: RsyncDeploy
+
+# Trigger on publish
+on:
+  release:
+    types: [published]
+  
+  
+jobs:
+  clone-rsync-command:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: clone repo
+      uses: actions/checkout@v2
+    
+    # Initiate Rsync to copy file
+    - name: rsync deployments
+      uses: burnett01/rsync-deployments@4.1
+      with:
+        switches: -avzr --delete --exclude=".*"
+        path: ./
+        remote_path: ${{ secrets.REMOTE_PATH }}
+        remote_host: ${{ secrets.HOSTNAME }}
+        remote_port: ${{ secrets.PORT }}
+        remote_user: ${{ secrets.ACCOUNT_NAME }}
+        remote_key: ${{ secrets.PRIVATE_KEY}}
+   
+    # Runs a single command using the runners shell
+    - name: Alert
+      run: echo Sync Done. Try to restart service.
+    
+    # Command to Restart Service. This service should be in jail and controled by supervisor.
+    # So, We will execute command inside jail.
+    - name: restart service
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOSTNAME }}
+        username: ${{ secrets.ACCOUNT_NAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: ${{ secrets.PORT }}
+        script: ${{ secrets.COMMAND }}
