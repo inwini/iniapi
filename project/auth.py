@@ -57,7 +57,13 @@ def login():
 
             # Edit First Page #
             # return redirect(next_page or url_for('main_bp.dashboard'))
-            return redirect(next_page or url_for('main_bp.search'))
+            if current_user.role_id == 2:
+                return redirect(next_page or url_for('main_bp.search'))
+            
+
+            if current_user.role_id == 1:
+                return redirect(next_page or url_for('main_bp.add_data'))
+            
             # Edit First Page #
 
         flash('Invalid username/password combination')
